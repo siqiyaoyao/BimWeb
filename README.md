@@ -12,13 +12,14 @@ Build and deploy a real-world app with MongoDB, Express, Angular, and Node (MEAN
    * open [http://localhost:4200](http://localhost:4200) in your favorite browser
 
 
+
     **server**,   
     Install nodemon globally to watch the Node server for changes without needing to restart after making updates:
 
     * `npm install nodemon -g`
 
     Then run
-    
+
     # Windows:
     * `SET NODE_ENV=dev`
     * `nodemon server`
@@ -26,4 +27,4 @@ Build and deploy a real-world app with MongoDB, Express, Angular, and Node (MEAN
     # OR Mac:
     * `NODE_ENV=dev nodemon server`
 
-    * open [http://localhost:3000](http://localhost:3000) in your favorite browser
+    * open [http://localhost:8083/api](http://localhost:8083/api) in your favorite browser
