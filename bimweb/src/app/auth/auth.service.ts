@@ -13,12 +13,19 @@ export class AuthService {
     responseType: 'token',
     redirectUri: AUTH_CONFIG.REDIRECT,
     audience: AUTH_CONFIG.AUDIENCE,
-    scope: AUTH_CONFIG.SCOPE
+    scope: AUTH_CONFIG.SCOPE,
+    
   });
+  
   userProfile: any;
   // Create a stream of logged in status to communicate throughout app
   loggedIn: boolean;
   loggedIn$ = new BehaviorSubject<boolean>(this.loggedIn);
+
+  isAdmin: boolean; // 储存用户的admin状态
+ 
+
+  
 
   constructor(private router: Router) {
     // If authenticated, set local profile property
@@ -27,12 +34,12 @@ export class AuthService {
     // in localStorage, log out.
     const lsProfile = localStorage.getItem('profile');
 
-    if (this.tokenValid) {
-      this.userProfile = JSON.parse(lsProfile);
+    if (this.tokenValid) {// 如果用户被授权，我们在本地储存的信息中找isAdmin的关键字，
+      this.userProfile = JSON.parse(localStorage.getItem('profile'));//将数据转换为js对象
+      this.isAdmin = localStorage.getItem('isAdmin') === 'true'; //转换string 为boolean
       this.setLoggedIn(true);
-    } else if (!this.tokenValid && lsProfile) {
-      this.logout();
     }
+
   }
 
   setLoggedIn(value: boolean) {
@@ -79,8 +86,18 @@ export class AuthService {
     localStorage.setItem('profile', JSON.stringify(profile));
     this.userProfile = profile;
     // Update login status in loggedIn$ stream
+    this.isAdmin = this._checkAdmin(profile);
+    localStorage.setItem('isAdmin',this.isAdmin.toString());
     this.setLoggedIn(true);
   }
+
+  // 确认用户的权限信息
+  private _checkAdmin(profile){
+    const roles = profile[AUTH_CONFIG.NAMESPACE] || [];
+    return roles.indexOf('admin') > -1;
+  }
+
+
 
   logout() {
     // Ensure all auth items removed from localStorage
@@ -88,8 +105,10 @@ export class AuthService {
     localStorage.removeItem('profile');
     localStorage.removeItem('expires_at');
     localStorage.removeItem('authRedirect');
+    localStorage.removeItem('isAdmin');
     // Reset local properties, update loggedIn$ stream
     this.userProfile = undefined;
+    this.isAdmin = undefined;
     this.setLoggedIn(false);
     // Return to homepage
     this.router.navigate(['/']);
