@@ -1,6 +1,6 @@
 import { BrowserModule, Title } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { NgModule, ElementRef} from '@angular/core';
+import { DatePipe ,CommonModule} from '@angular/common';
 import { FormsModule } from '@angular/forms';
  
 import { AppRoutingModule } from './app-routing.module';
@@ -19,7 +19,13 @@ import { FilterSortService } from './core/filter-sort.service';
 import { CallbackComponent } from './pages/callback/callback.component'
 
 import {HttpClientModule} from '@angular/common/http';
-
+import { AdminComponent } from './pages/admin/admin.component';
+import { EventComponent } from './pages/event/event.component';
+import { EventDetailComponent } from './pages/event/event-detail/event-detail.component';
+import { RsvpComponent } from './pages/event/rsvp/rsvp.component';
+import { ViewpageComponent } from './viewpage/viewpage.component';
+import { ViewsubmitComponent } from './viewsubmit/viewsubmit.component';
+import {FileUploadModule } from 'ng2-file-upload';
 
 @NgModule({
   declarations: [
@@ -28,13 +34,23 @@ import {HttpClientModule} from '@angular/common/http';
     HeaderComponent,
     FooterComponent,
     CallbackComponent,
-    LoadingComponent
+    LoadingComponent,
+    AdminComponent,
+    EventComponent,
+    EventDetailComponent,
+    RsvpComponent,
+    ViewpageComponent,
+    ViewsubmitComponent
   ],
   imports: [
+    
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
+    CommonModule,
+    FileUploadModule,
+    
   ],
   providers: [
     Title,
@@ -42,7 +58,9 @@ import {HttpClientModule} from '@angular/common/http';
     ApiService,
     DatePipe,
     UtilsService,
-    FilterSortService
+    FilterSortService,
+    
+    
   ],
   bootstrap: [AppComponent]
 })

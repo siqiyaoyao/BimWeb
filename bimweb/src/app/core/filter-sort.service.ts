@@ -1,18 +1,20 @@
+// src/app/core/filter-sort.service.ts
 import { Injectable } from '@angular/core';
 import { DatePipe } from '@angular/common';
-
-
 
 @Injectable()
 export class FilterSortService {
 
-  constructor(private datePipe:DatePipe) { }
+  constructor(private datePipe: DatePipe) { }
 
-  private _objArrayCheck(array:any[]):boolean{
-    //判断数组第一个值是否为物件
-    //能够避免uncaught reference errors
+  private _objArrayCheck(array: any[]): boolean {
+    // Checks if the first item in the array is an object
+    // (assumes same-shape for all array items)
+    // Necessary because some arrays passed in may have
+    // models that don't match {[key: string]: any}[]
+    // This check prevents uncaught reference errors
     const item0 = array[0];
-    const check = !! (array.length && item0 !== null && Object.prototype.toString.call(item0))
+    const check = !!(array.length && item0 !== null && Object.prototype.toString.call(item0) === '[object Object]');
     return check;
   }
 

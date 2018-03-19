@@ -47,4 +47,10 @@ export class UtilsService {
     return now >= then;
   }
 
+  //tab键
+  tabIs(currentTab:string,tab:string):boolean{
+    //确认当前tab是tab名称
+    return currentTab ===tab;
+  }
+
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient,HttpHeaders,HttpErrorResponse } from '@angular/common/http';//权限管理
+import { HttpClient,HttpHeaders,HttpErrorResponse } from '@angular/common/http';//http相关服务
 import { AuthService } from './../auth/auth.service';//认证请求
 import { Observable } from 'rxjs/Observable';// 数据流
 import { catchError } from 'rxjs/operators';// 操作数据流

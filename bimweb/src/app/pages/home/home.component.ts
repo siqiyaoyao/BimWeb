@@ -33,6 +33,7 @@ export class HomeComponent implements OnInit, OnDestroy { // TS/ES6 类
   ngOnInit() {
     this.title.setTitle(this.pageTitle); // 用Title的类的方法将pageTitle赋值给页面title
     this._getEventList();
+    
   }
 
   private _getEventList(){
@@ -44,6 +45,9 @@ export class HomeComponent implements OnInit, OnDestroy { // TS/ES6 类
         res =>{
           this.eventList = res;
           this.loading = false;
+          console.log("get events")
+          console.log(res)
+          this.searchEvents();
         }
       ,
         err=>{
@@ -57,10 +61,12 @@ export class HomeComponent implements OnInit, OnDestroy { // TS/ES6 类
   // _id哪里来？
   searchEvents(){
     this.filteredEvents = this.fs.search(this.eventList,this.query,'_id','mediumDate')
+    console.log("search")
+    console.log(this.filteredEvents)
   }
 
 
-  restQuery(){
+  resetQuery(){
     this.query ='';
     this.filteredEvents = this.eventList;
   }

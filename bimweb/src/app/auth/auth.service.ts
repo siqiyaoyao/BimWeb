@@ -48,7 +48,14 @@ export class AuthService {
     this.loggedIn = value;
   }
 
-  login() {
+  login(redirect?:string) {
+    /*
+    确认redirect属性，如果没有，用户是从网址进来而不是从guard进来
+    这种情况我们会把当前的URL保存到——redirect到本地，当用户的登陆后会重新返回该页面
+    */
+    // Set redirect after login
+    const _redirect = redirect ? redirect : this.router.url; // 进行页面跳转判断
+    localStorage.setItem('authRedirect', _redirect);//将当前页面保存到本地
     // Auth0 authorize request
     this._auth0.authorize();
   }
@@ -59,10 +66,12 @@ export class AuthService {
       if (authResult && authResult.accessToken) {
         window.location.hash = '';
         this._getProfile(authResult);
-      } else if (err) {
+      } else if (err) {//登录失败后的行为
+        this._clearRedirect();//情况本地储存的当前页面地址
+        this.router.navigate(['/']);//回到主页
         console.error(`Error authenticating: ${err.error}`);
       }
-      this.router.navigate(['/']);
+     // this.router.navigate(['/']); //无法通过路径访问其他页面
     });
   }
 
@@ -71,10 +80,30 @@ export class AuthService {
     this._auth0.client.userInfo(authResult.accessToken, (err, profile) => {
       if (profile) {
         this._setSession(authResult, profile);
+        //..
+        this.router.navigate([localStorage.getItem('authRedirect') || '/']);
+        this._clearRedirect();
       } else if (err) {
         console.error(`Error authenticating: ${err.error}`);
       }
+      this._redirect();
+      this._clearRedirect();
     });
+  }
+  private _redirect() {
+    // Redirect with or without 'tab' query parameter
+    // Note: does not support additional params besides 'tab'
+    
+    const fullRedirect = decodeURI(localStorage.getItem('authRedirect'));
+    const redirectArr = fullRedirect.split('?tab=');
+    const navArr = [redirectArr[0] || '/'];
+    const tabObj = redirectArr[1] ? { queryParams: { tab: redirectArr[1] }} : null;
+
+    if (!tabObj) {
+      this.router.navigate(navArr);
+    } else {
+      this.router.navigate(navArr, tabObj);
+    }
   }
 
   private _setSession(authResult, profile) {
@@ -97,6 +126,11 @@ export class AuthService {
     return roles.indexOf('admin') > -1;
   }
 
+  private _clearRedirect() {
+    // Remove redirect from localStorage
+    localStorage.removeItem('authRedirect');
+  }
+
 
 
   logout() {
@@ -106,6 +140,7 @@ export class AuthService {
     localStorage.removeItem('expires_at');
     localStorage.removeItem('authRedirect');
     localStorage.removeItem('isAdmin');
+    this._clearRedirect();
     // Reset local properties, update loggedIn$ stream
     this.userProfile = undefined;
     this.isAdmin = undefined;
@@ -119,5 +154,7 @@ export class AuthService {
     const expiresAt = JSON.parse(localStorage.getItem('expires_at'));
     return Date.now() < expiresAt;
   }
+
+
 
 }

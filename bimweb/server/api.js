@@ -16,7 +16,7 @@ const Rsvp = require('./models/Rsvp');
  */
 
 module.exports = function(app, config) {
-  // Authentication middleware
+  // Authentication middleware // 需要用这个来确认登录信息
   const jwtCheck = jwt({
     secret: jwks.expressJwtSecret({
       cache: true,
@@ -74,19 +74,20 @@ module.exports = function(app, config) {
 
   });
 
-  app.get('/api/events/admin',(req,res)=>{
-    Event.find({},_eventListProjection,(err,events)=>{
-      if(err){
-        return res.startDatetime(500).send({message:err.message});
+  app.get('/api/events/admin', jwtCheck, adminCheck, (req, res) => {
+    Event.find({}, _eventListProjection, (err, events) => {
+      let eventsArr = [];
+      if (err) {
+        return res.status(500).send({message: err.message});
       }
-      if(events){
-        events.forEach(event=>{
+      if (events) {
+        events.forEach(event => {
           eventsArr.push(event);
         });
       }
       res.send(eventsArr);
-    })
-  })
+    });
+  });
 
   // GET details
   // 通过id来获得事件 并验证是否获得授权
